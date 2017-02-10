@@ -56,7 +56,7 @@ abstract class QuickBooks_Object
 	 * @var array
 	 */
 	protected $_object = array();
-	
+
 	/**
 	 * Create a new instance of this QuickBooks class
 	 * 
@@ -64,7 +64,7 @@ abstract class QuickBooks_Object
 	 */
 	public function __construct($arr)
 	{
-		$this->_object = $arr; 
+		$this->_object = $arr;
 	}
 	
 	/**
@@ -397,7 +397,7 @@ abstract class QuickBooks_Object
 		}
 		
 		// 1228241458		vs.		19830102
-		if (ereg('^[[:digit:]]+$', $date) and strlen($date) > 8)
+		if (preg_match('/^\d+$/', $date) and strlen($date) > 8)
 		{
 			// It's a unix timestamp (seconds since unix epoch, conver to string)
 			$date = date('Y-m-d', $date);
@@ -438,6 +438,29 @@ abstract class QuickBooks_Object
 		return sprintf('%01.2f', (float) $this->get($key));
 	}
 	
+	public function getApplicationIDType( $key, $types, $ListID_or_TxnID_key )
+	{
+		if (isset($this->_object[$key]))
+		{
+			// The application ID is already set in the array (because this object wasn't
+			// returned object from QuickBooks, but is rather something we built and are
+			// sending to QuickBooks) so just return it
+			return $this->extractApplicationID($this->get($key));
+		}
+		else
+		{
+			// Try to translate to QB id
+			$instance = QuickBooks_API_Singleton::getInstance();
+
+			$qbId = $this->get($ListID_or_TxnID_key);
+
+			// Do a lookup with QuickBooks_Utilities::fetchApplicationID() to fetch the application ID based on the ListID or TxnID
+			$appid = $instance->fetchApplicationID( $types, $this->get($ListID_or_TxnID_key) );
+
+			return $appid;
+		}
+	}
+
 	/**
 	 * Tell if a data field exists within the object
 	 * 
@@ -853,7 +876,7 @@ abstract class QuickBooks_Object
 		}
 		
 		$type = QuickBooks_Utilities::actionToObject($action_or_object);
-		
+
 		$exceptions = array(
 			QUICKBOOKS_OBJECT_SERVICEITEM => 'ServiceItem', 
 			QUICKBOOKS_OBJECT_INVENTORYITEM => 'InventoryItem', 
@@ -872,15 +895,13 @@ abstract class QuickBooks_Object
 		{
 			$type = $exceptions[$type];
 		}
-		
-		//print('trying to create type: {' . $type . '}' . "\n");
-		
+
 		$class = 'QuickBooks_Object_' . ucfirst(strtolower($type));
-		
+
 		if (class_exists($class, false))
 		{
 			$Object = QuickBooks_Object::_fromXMLHelper($class, $XML);
-			
+
 			if (!is_object($Object))
 			{
 				return false;
@@ -910,6 +931,29 @@ abstract class QuickBooks_Object
 						'InvoiceLineRet' => array( 'QuickBooks_Object_Invoice_InvoiceLine', 'addInvoiceLine' ), 
 						);
 					
+					break;
+				case QUICKBOOKS_OBJECT_CREDITMEMO:
+
+					$children = array(
+						'CreditMemoLineRet' => array( 'QuickBooks_Object_CreditMemo_CreditMemoLine', 'addCreditMemoLine' ),
+						'LinkedTxn' => array( 'QuickBooks_Object_CreditMemo_LinkedTxn', 'addLinkedTxn' )
+					);
+
+					break;
+				case QUICKBOOKS_OBJECT_CHECK:
+
+					$children = array(
+						'ExpenseLineRet' => array( 'QuickBooks_Object_Check_ExpenseLine', 'addExpenseLine' ),
+						'LinkedTxn' => array( 'QuickBooks_Object_Check_LinkedTxn', 'addLinkedTxn' )
+					);
+
+					break;
+				case QUICKBOOKS_OBJECT_RECEIVEPAYMENT:
+
+					$children = array( 
+						'AppliedToTxnRet' => array( 'QuickBooks_Object_ReceivePayment_AppliedToTxn', 'addAppliedToTxn' ), 
+					);
+
 					break;
 				case QUICKBOOKS_OBJECT_ESTIMATE:
 					

@@ -2,7 +2,7 @@
 
 /**
  * 
- * @author Keith Palmer <keith@consolibyte.com>
+ * @author Erich Musick <mail@erichmusick.com>
  * @license LICENSE.txt 
  * 
  * @package QuickBooks
@@ -17,16 +17,16 @@ QuickBooks_Loader::load('/QuickBooks/Object/Generic.php');
 /**
  * 
  */
-QuickBooks_Loader::load('/QuickBooks/Object/ReceivePayment.php');
+QuickBooks_Loader::load('/QuickBooks/Object/Check.php');
 
 /**
  * 
  * 
  */
-class QuickBooks_Object_ReceivePayment_AppliedToTxn extends QuickBooks_Object_Generic
+class QuickBooks_Object_Check_LinkedTxn extends QuickBooks_Object_Generic
 {
 	/**
-	 * Create a new QuickBooks ReceivePayment AppliedToTxn object
+	 * Create a new QuickBooks CreditMemo LinkedTxn object
 	 * 
 	 * @param array $arr
 	 */
@@ -55,11 +55,10 @@ class QuickBooks_Object_ReceivePayment_AppliedToTxn extends QuickBooks_Object_Ge
 		return $this->getTxnID();
 	}
 	
-	public function setTxnApplicationID($value, $txnIdType = QUICKBOOKS_OBJECT_INVOICE)
+	public function setTxnApplicationID($value)
 	{
-		$this->set(QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID($txnIdType, QUICKBOOKS_TXNID, $value));
-		//return $this->set(QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_INVOICE, QUICKBOOKS_TXNID, $value));
-		//return $this->set('NullRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_INVOICE, QUICKBOOKS_TXNID, $value));
+		// TODO: Is it safe to use getTxnType for the id type?
+		$this->set(QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID($this->getTxnType(), QUICKBOOKS_TXNID, $value));
 	}
 
 	public function getTxnApplicationID()
@@ -67,24 +66,50 @@ class QuickBooks_Object_ReceivePayment_AppliedToTxn extends QuickBooks_Object_Ge
 		return $this->extractApplicationID($this->get(QUICKBOOKS_API_APPLICATIONID));
 	}
 	
-	public function getPaymentAmount()
+	public function getTxnType()
+	{
+		return $this->get('TxnType');
+	}
+	
+	public function setTxnType($txnType)
+	{
+		return $this->set('TxnType', $txnType);
+	}
+	
+	/**
+	 * Set the reference number
+	 * 
+	 * @param string $str
+	 * @return boolean
+	 */
+	public function setRefNumber($str)
+	{
+		return $this->set('RefNumber', $str);
+	}
+	
+	public function getRefNumber()
+	{
+		return $this->get('RefNumber');
+	}
+	
+	public function setLinkType($str)
+	{
+		return $this->set('LinkType', $str);
+	}
+	
+	public function getLinkType()
+	{
+		return $this->get('LinkType');
+	}
+	
+	public function getAmount()
 	{
 		return $this->getAmountType('Amount');
 	}
 	
-	public function setPaymentAmount($amount)
+	public function setAmount($amount)
 	{
-		return $this->setAmountType('PaymentAmount', $amount);
-	}
-	
-	public function setDiscountAmount($amount)
-	{
-		return $this->setAmountType('DiscountAmount', $amount);
-	}
-	
-	public function getDiscountAmount()
-	{
-		return $this->getDiscountAmount('DiscountAmount');
+		return $this->setAmountType('Amount', $amount);
 	}
 	
 	/**
@@ -118,12 +143,12 @@ class QuickBooks_Object_ReceivePayment_AppliedToTxn extends QuickBooks_Object_Ge
 		
 		switch ($parent)
 		{
-			case QUICKBOOKS_ADD_RECEIVEPAYMENT:
-				$root = 'AppliedToTxnAdd';
+			case QUICKBOOKS_ADD_CHECK:
+				$root = null;
 				$parent = null;
 				break;
-			case QUICKBOOKS_MOD_RECEIVEPAYMENT:
-				$root = 'AppliedToTxnMod';
+			case QUICKBOOKS_MOD_CHECK:
+				$root = null;
 				$parent = null;
 				break;
 		}
@@ -153,6 +178,6 @@ class QuickBooks_Object_ReceivePayment_AppliedToTxn extends QuickBooks_Object_Ge
 	 */
 	public function object()
 	{
-		return 'AppliedToTxn';
+		return 'LinkedTxn';
 	}
 }

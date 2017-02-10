@@ -1,9 +1,11 @@
 <?php
 
 /**
- * QuickBooks InvoiceLine object class
+ * QuickBooks CreditMemoLine object class
+ *
+ * Derived from Keith's InvoiceLine class
  * 
- * @author Keith Palmer <keith@consolibyte.com>
+ * @author Erich Musick <mail@erichmusick.com>
  * @license LICENSE.txt 
  * 
  * @package QuickBooks
@@ -16,17 +18,17 @@
 QuickBooks_Loader::load('/QuickBooks/Object.php');
 
 /**
- * QuickBooks invoice class
+ * QuickBooks CreditMemo class
  */
-QuickBooks_Loader::load('/QuickBooks/Object/Invoice.php');
+QuickBooks_Loader::load('/QuickBooks/Object/CreditMemo.php');
 
 /**
- * QuickBooks InvoiceLine class for Invoices
+ * QuickBooks CreditMemoLine class for CreditMemos
  */
-class QuickBooks_Object_Invoice_InvoiceLine extends QuickBooks_Object
+class QuickBooks_Object_CreditMemo_CreditMemoLine extends QuickBooks_Object
 {
 	/**
-	 * Create a new QuickBooks Invoice InvoiceLine object
+	 * Create a new QuickBooks CreditMemo CreditMemoLine object
 	 * 
 	 * @param array $arr
 	 */
@@ -41,7 +43,7 @@ class QuickBooks_Object_Invoice_InvoiceLine extends QuickBooks_Object
 	}
 	
 	/**
-	 * Set the Item ListID for this InvoiceLine
+	 * Set the Item ListID for this CreditMemoLine
 	 * 
 	 * @param string $ListID
 	 * @return boolean
@@ -52,7 +54,7 @@ class QuickBooks_Object_Invoice_InvoiceLine extends QuickBooks_Object
 	}
 	
 	/** 
-	 * Set the item application ID for this invoice line 
+	 * Set the item application ID for this credit memo line 
 	 * 
 	 * @param mixed $value
 	 * @return boolean
@@ -63,7 +65,7 @@ class QuickBooks_Object_Invoice_InvoiceLine extends QuickBooks_Object
 	}
 	
 	/**
-	 * Set the item name for this invoice line
+	 * Set the item name for this credit memo line
 	 * 
 	 * @param string $name
 	 * @return boolean
@@ -101,7 +103,7 @@ class QuickBooks_Object_Invoice_InvoiceLine extends QuickBooks_Object
 	}
 	
 	/**
-	 * Get the name of the item for this invoice line item
+	 * Get the name of the item for this credit memo line item
 	 * 
 	 * @return string
 	 */
@@ -165,16 +167,6 @@ class QuickBooks_Object_Invoice_InvoiceLine extends QuickBooks_Object
 		return $this->get('Rate');
 	}
 	
-	public function getAmount()
-	{
-		if ($amount = $this->get('Amount'))
-		{
-			return $this->get('Amount');
-		}
-		
-		return $this->get('Rate') * $this->get('Quantity');
-	}
-	
 	public function setRatePercent($percent)
 	{
 		return $this->set('RatePercent', (float) $percent);
@@ -211,7 +203,7 @@ class QuickBooks_Object_Invoice_InvoiceLine extends QuickBooks_Object
 	}
 	
 	/** 
-	 * Set the class ListID for this invoice line item
+	 * Set the class ListID for this credit memo line item
 	 * 
 	 * @param string $ListID
 	 * @return boolean
@@ -227,7 +219,7 @@ class QuickBooks_Object_Invoice_InvoiceLine extends QuickBooks_Object
 	}
 	
 	/** 
-	 * Set the class name for this invoice line item
+	 * Set the class name for this credit memo line item
 	 * 
 	 * @param string $name
 	 * @return boolean
@@ -297,6 +289,7 @@ class QuickBooks_Object_Invoice_InvoiceLine extends QuickBooks_Object
 		return $this->get('SalesTaxCodeRef FullName') == QUICKBOOKS_TAXABLE;
 	}
 	
+		
 	public function setIsTaxable($isTaxable)
 	{
 		return $this->set('IsTaxable', $isTaxable);
@@ -390,12 +383,12 @@ class QuickBooks_Object_Invoice_InvoiceLine extends QuickBooks_Object
 		
 		switch ($parent)
 		{
-			case QUICKBOOKS_ADD_INVOICE:
-				$root = 'InvoiceLineAdd';
+			case QUICKBOOKS_ADD_CREDITMEMO:
+				$root = 'CreditMemoLineAdd';
 				$parent = null;
 				break;
-			case QUICKBOOKS_MOD_INVOICE:
-				$root = 'InvoiceLineMod';
+			case QUICKBOOKS_MOD_CREDITMEMO:
+				$root = 'CreditMemoLineMod';
 				$parent = null;
 				break;
 		}
@@ -425,6 +418,8 @@ class QuickBooks_Object_Invoice_InvoiceLine extends QuickBooks_Object
 	 */
 	public function object()
 	{
-		return 'InvoiceLine';
+		return 'CreditMemoLine';
 	}
 }
+
+?>

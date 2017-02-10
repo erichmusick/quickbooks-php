@@ -448,6 +448,9 @@ class QuickBooks_Callbacks
 			$tmp = null;
 		}
 		
+		$Driver->log("Action = $action");
+		$Driver->log("a == " . print_r($map,true));
+		
 		// Call the appropriate callback function 
 		if (is_array($tmp))
 		{

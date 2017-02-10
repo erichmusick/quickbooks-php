@@ -31,6 +31,11 @@ QuickBooks_Loader::load('/QuickBooks/Object/Check/ItemLine.php');
 QuickBooks_Loader::load('/QuickBooks/Object/Check/ItemGroupLine.php');
 
 /**
+ * Linked transaction line item
+ */
+QuickBooks_Loader::load('/QuickBooks/Object/Check/LinkedTxn.php');
+
+/**
  *
  */
 QuickBooks_Loader::load('/QuickBooks/Object/Check/ApplyCheckToTxn.php');
@@ -48,6 +53,43 @@ class QuickBooks_Object_Check extends QuickBooks_Object
 	public function __construct($arr = array())
 	{
 		parent::__construct($arr);
+	}
+
+	/**
+	 * Alias of {@link QuickBooks_Object_Invoice::setTxnID()}
+	 */
+	public function setTransactionID($TxnID)
+	{
+		return $this->setTxnID($TxnID);
+	}
+
+	/**
+	 * Set the transaction ID of the Invoice object
+	 *
+	 * @param string $TxnID
+	 * @return boolean
+	 */
+	public function setTxnID($TxnID)
+	{
+		return $this->set('TxnID', $TxnID);
+	}
+
+	/**
+	 * Alias of {@link QuickBooks_Object_Invoice::getTxnID()}
+	 */
+	public function getTransactionID()
+	{
+		return $this->getTxnID();
+	}
+
+	/**
+	 * Get the transaction ID for this invoice
+	 *
+	 * @return string
+	 */
+	public function getTxnID()
+	{
+		return $this->get('TxnID');
 	}
 
 	// Path: AccountRef ListID, datatype: 
@@ -141,9 +183,9 @@ class QuickBooks_Object_Check extends QuickBooks_Object
 	 * @param mixed $value			The primary key within your own application
 	 * @return string
 	 */
-	public function setPayeeEntityApplicationID($value)
+	public function setPayeeEntityApplicationID($value, $type = QUICKBOOKS_OBJECT_PAYEEENTITY)
 	{
-		return $this->set('PayeeEntityRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_PAYEEENTITY, QUICKBOOKS_LISTID, $value));
+		return $this->set('PayeeEntityRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID($type, QUICKBOOKS_LISTID, $value));
 	}
 
 	public function getPayeeEntityApplicationID()
@@ -236,8 +278,32 @@ class QuickBooks_Object_Check extends QuickBooks_Object
 	{
 		return $this->getTxnDate($format = null);
 	}
+
+	// Path: Amount, datatype: AMTTYPE
+
+	/**
+	 * Set the Amount for the Check
+	 *
+	 * @param string $value
+	 * @return boolean
+	 */
+	public function setAmount($value)
+	{
+		return $this->setAmountType('Amount', $value);
+	}
+
+	/**
+	 * Get the amount for the Check
+	 *
+	 * @return string
+	 */
+	public function getAmount()
+	{
+		return $this->getAmountType('Amount');
+	}
+
 	// Path: Memo, datatype: STRTYPE
-	
+
 	/**
 	 * Set the Memo for the Check
 	 * 
@@ -259,6 +325,55 @@ class QuickBooks_Object_Check extends QuickBooks_Object
 		return $this->get('Memo');
 	}
 
+	
+	/**
+	 * Get the address 
+	 * 
+	 * @param string $part			A specific portion of the address to get (i.e. "Addr1" or "State")
+	 * @param array $defaults		Default values if a value isn't filled in
+	 * @return array				The address
+	 */
+	public function getAddress($part = null, $defaults = array())
+	{
+		if (!is_null($part))
+		{
+			return $this->get('Address ' . $part);
+		}
+		
+		return $this->getArray('Address *', $defaults);
+	}
+	
+	/**
+	 * Set the address for the check
+	 * 
+	 * @param string $addr1			Address line 1
+	 * @param string $addr2			Address line 2
+	 * @param string $addr3			Address line 3
+	 * @param string $addr4			Address line 4
+	 * @param string $addr5			Address line 5
+	 * @param string $city			City
+	 * @param string $state			State
+	 * @param string $province		Province (Canadian editions of QuickBooks only!)
+	 * @param string $postalcode	Postal code
+	 * @param string $country		Country
+	 * @param string $note			Notes
+	 * @return void
+	 */
+	public function setAddress($addr1, $addr2 = '', $addr3 = '', $addr4 = '', $addr5 = '', $city = '', $state = '', $province = '', $postalcode = '', $country = '', $note = '')
+	{
+		for ($i = 1; $i <= 5; $i++)
+		{
+			$this->set('Address Addr' . $i, ${'addr' . $i});
+		}
+		
+		$this->set('Address City', $city);
+		$this->set('Address State', $state);
+		$this->set('Address Province', $province);
+		$this->set('Address PostalCode', $postalcode);
+		$this->set('Address Country', $country);
+		$this->set('Address Note', $note);  
+	}
+	
 	// Path: IsToBePrinted, datatype: BOOLTYPE
 	
 	/**
@@ -382,9 +497,65 @@ class QuickBooks_Object_Check extends QuickBooks_Object
 		return $this->addListItem('ExpenseLine', $obj);
 	}
 	
-	public function addAddCheckToTxn($obj)
+	public function addApplyCheckToTransaction($obj)
 	{
-		return $this->addListItem('AddCheckToTxn', $obj);
+		return $this->addApplyCheckToTxn();
+	}
+	
+	public function addApplyCheckToTxn($obj)
+	{
+		$lines = $this->get('ApplyCheckToTxn');
+		
+		if (!is_array($lines))
+		{
+			$lines = array();
+		}
+		
+		//
+		$lines[] = $obj;
+		
+		return $this->set('ApplyCheckToTxn', $lines);
+	}
+	
+	/**
+	 * Set the primary key for the related record within your own application for the Check
+	 * 
+	 * @param mixed $value			The primary key within your own application
+	 * @author Erich Musick
+	 * @return string
+	 */
+	/*
+	public function setAddCheckToTxnApplicationID($value)
+	{
+		return $this->set('AddCheckToTxn ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_TRANSACTION, QUICKBOOKS_LISTID, $value));
+	}
+
+	public function getAddCheckToTxnApplicationID()
+	{
+		return $this->get('AddCheckToTxn ' . QUICKBOOKS_API_APPLICATIONID);
+	}	*/
+	
+	/**
+	 * Alias of {@link QuickBooks_Object_CreditMemo::addLinkedTxn()}
+	 */
+	public function addLinkedTransaction($obj)
+	{
+		return $this->addLinkedTxn($obj);
+	}
+	
+	public function addLinkedTxn($obj)
+	{
+		return $this->addListItem('LinkedTxn', $obj);
+	}
+		
+	public function getLinkedTxnLine($i)
+	{
+		return $this->getListItem('LinkedTxn', $i);
+	}
+	
+	public function listLinkedTxnLines()
+	{
+		return $this->getList('LinkedTxn');
 	}
 	
 	public function asList($request)
@@ -408,14 +579,18 @@ class QuickBooks_Object_Check extends QuickBooks_Object
 					$this->_object['ExpenseLineAdd'] = $this->_object['ExpenseLine'];
 				}
 				
-				if (isset($this->_object['AddCheckToTxn']))
+				if (isset($this->_object['ApplyCheckToTxn']))
 				{
-					$this->_object['AddCheckToTxnAdd'] = $this->_object['AddCheckToTxn'];
+					$this->_object['ApplyCheckToTxnAdd'] = $this->_object['ApplyCheckToTxn'];
 				}
 				
 				break;
 			case 'CheckModRq':
 				
+				if (isset($this->_object['ApplyCheckToTxn']))
+				{
+					$this->_object['ApplyCheckToTxnMod'] = $this->_object['ApplyCheckToTxn'];
+				}
 				
 				break;
 		}
@@ -471,6 +646,16 @@ class QuickBooks_Object_Check extends QuickBooks_Object
 				if (isset($object['ItemLine']))
 				{
 					$object['ItemLineMod'] = $object['ItemLine'];
+				}
+
+				$object = $this->_object;
+				
+				if (!empty($object['ApplyCheckToTxnMod']))
+				{
+					foreach ($object['ApplyCheckToTxnMod'] as $key => $obj)
+					{
+						$obj->setOverride('ApplyCheckToTxnMod');
+					}			
 				}
 				break;
 		}

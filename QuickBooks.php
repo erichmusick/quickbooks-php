@@ -981,8 +981,10 @@ if (!defined('QUICKBOOKS_FRAMEWORKS'))
 {
 	$all = 0;
 	
-	$constants = get_defined_constants(true);
-	foreach ($constants['user'] as $constant => $value)
+	// TODO: Had to remove "categorize" parameter from get_defined_constants call.
+	// It was causing 503 errors. Don't know why
+	$constants = get_defined_constants();
+	foreach ($constants as $constant => $value)
 	{
 		if (substr($constant, 0, 21) == 'QUICKBOOKS_FRAMEWORK_')
 		{
@@ -1127,4 +1129,3 @@ if (QUICKBOOKS_FRAMEWORK_INTEGRATORS & QUICKBOOKS_FRAMEWORKS)
 	// Integrator runnable classes
 	QuickBooks_Loader::import('/QuickBooks/Runnable/Integrator');
 }
-

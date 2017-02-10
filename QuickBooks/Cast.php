@@ -426,7 +426,7 @@ class QuickBooks_Cast
 				'<' => '&lt;', 
 				'>' => '&gt;',
 				//'\'' => '&apos;', 
-				'"' => '&quot;', 
+				//'"' => '&quot;',  // TODO: Uncommented by Erich Musick because I was getting &quot; in item names. QBOE returns " in the XMl, so I think it's OK to send it.
 				);
 			
 			// First, *unreplace* things so that we don't double escape them

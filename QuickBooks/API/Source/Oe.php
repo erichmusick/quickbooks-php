@@ -61,7 +61,7 @@ class QuickBooks_API_Source_OE extends QuickBooks_API_Source
 	protected $_debug;
 	
 	protected $_live_gateway = 'https://webapps.quickbooks.com/j/AppGateway';
-	protected $_test_gateway = '';
+	protected $_test_gateway = 'https://webapps.ptc.quickbooks.com/j/AppGateway';
 	
 	protected $_ticket_session = '';
 	protected $_ticket_connection = '';
@@ -844,10 +844,14 @@ class QuickBooks_API_Source_OE extends QuickBooks_API_Source
 			//QUICKBOOKS_ADD_UNITOFMEASURESET, 
 			//QUICKBOOKS_MOD_UNITOFMEASURESET, 
 			//QUICKBOOKS_QUERY_UNITOFMEASURESET,
-			
+
 			QUICKBOOKS_ADD_VENDOR, 
 			QUICKBOOKS_MOD_VENDOR, 
-			QUICKBOOKS_QUERY_VENDOR,  
+			QUICKBOOKS_QUERY_VENDOR,
+
+			QUICKBOOKS_ADD_CREDITMEMO,
+
+			QUICKBOOKS_ADD_CHECK,
 			);
 	}
 	

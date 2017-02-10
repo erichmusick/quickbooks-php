@@ -139,7 +139,7 @@ class QuickBooks_Callbacks_API_Callbacks
 	 * @param string $ListID_or_TxnID		The ListID or TxnID of the object within QuickBooks
 	 * @return string						The application record primary key
 	 */
-	static protected function _mapToApplicationID($func, $user, $type, $ListID_or_TxnID)
+	static public function _mapToApplicationID($func, $user, $type, $ListID_or_TxnID)
 	{
 		if (strlen($func))
 		{
@@ -463,7 +463,7 @@ class QuickBooks_Callbacks_API_Callbacks
 		
 		$xml_errnum = 0;
 		$xml_errmsg = '';
-		
+
 		$Parser = new QuickBooks_XML($xml);
 		if ($Parser->validate($xml_errnum, $xml_errmsg) and 
 			$Doc = $Parser->parse($xml_errnum, $xml_errmsg))
@@ -474,7 +474,7 @@ class QuickBooks_Callbacks_API_Callbacks
 			
 			// Get rid of some gunk... 
 			$Response = $Root->getChildAt('QBXML QBXMLMsgsRs ' . $action . 'Rs');
-			
+
 			if ($Response)
 			{
 				foreach ($Response->children() as $Child)
@@ -769,6 +769,56 @@ class QuickBooks_Callbacks_API_Callbacks
 		return QuickBooks_Callbacks_API_Callbacks::_doAddResponse($requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents);
 	}
 
+	/**
+	 * EDM
+	 * 
+	 * @param unknown_type $requestID
+	 * @param unknown_type $user
+	 * @param unknown_type $action
+	 * @param unknown_type $ID
+	 * @param unknown_type $extra
+	 * @param unknown_type $err
+	 * @param unknown_type $last_action_time
+	 * @param unknown_type $last_actionident_time
+	 * @param unknown_type $version
+	 * @param unknown_type $locale
+	 * @param unknown_type $config
+	 * @param unknown_type $qbxml
+	 */
+	public static function CreditMemoAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = array(), $qbxml = null)
+	{
+		return QuickBooks_Callbacks_API_Callbacks::_doAddRequest($requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $version, $locale, $config, $qbxml);
+	}
+	
+	/**
+	 * EDM 
+	 * 
+	 * @param unknown_type $requestID
+	 * @param unknown_type $user
+	 * @param unknown_type $action
+	 * @param unknown_type $ID
+	 * @param unknown_type $extra
+	 * @param unknown_type $err
+	 * @param unknown_type $last_action_time
+	 * @param unknown_type $last_actionident_time
+	 * @param unknown_type $xml
+	 * @param unknown_type $idents
+	 */
+	public static function CreditMemoAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents)
+	{
+		return QuickBooks_Callbacks_API_Callbacks::_doAddResponse($requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents);
+	}
+	
+	public static function CreditMemoQueryRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = array(), $qbxml = null)
+	{
+		return QuickBooks_Callbacks_API_Callbacks::_doQueryRequest($requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $version, $locale, $config, $qbxml);
+	}
+	
+	public static function CreditMemoQueryResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents)
+	{
+		return QuickBooks_Callbacks_API_Callbacks::_doQueryResponse($requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents);
+	}
+
 	public static function CheckAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = array(), $qbxml = null)
 	{
 		return QuickBooks_Callbacks_API_Callbacks::_doAddRequest($requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $version, $locale, $config, $qbxml);
@@ -777,6 +827,16 @@ class QuickBooks_Callbacks_API_Callbacks
 	public static function CheckAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents)
 	{
 		return QuickBooks_Callbacks_API_Callbacks::_doAddResponse($requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents);
+	}
+	
+	public static function CheckModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = array(), $qbxml = null)
+	{
+		return QuickBooks_Callbacks_API_Callbacks::_doModRequest($requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $version, $locale, $config, $qbxml);
+	}
+	
+	public static function CheckModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents)
+	{
+		return QuickBooks_Callbacks_API_Callbacks::_doModResponse($requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents);
 	}
 
 	public static function DepositAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = array(), $qbxml = null)
@@ -900,6 +960,25 @@ class QuickBooks_Callbacks_API_Callbacks
 		return QuickBooks_Callbacks_API_Callbacks::_doAddResponse($requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents);
 	}
 	
+	public static function ReceivePaymentModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = array(), $qbxml = null)
+	{
+		return QuickBooks_Callbacks_API_Callbacks::_doModRequest($requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $version, $locale, $config, $qbxml);
+	}
+	
+	public static function ReceivePaymentModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents)
+	{
+		return QuickBooks_Callbacks_API_Callbacks::_doModResponse($requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents);
+	}
+	
+	public static function ReceivePaymentQueryRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = array(), $qbxml = null)
+	{
+		return QuickBooks_Callbacks_API_Callbacks::_doQueryRequest($requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $version, $locale, $config, $qbxml);
+	}
+	
+	public static function ReceivePaymentQueryResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents)
+	{
+		return QuickBooks_Callbacks_API_Callbacks::_doQueryResponse($requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents);
+	}
 	
 	public static function CustomerAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = array(), $qbxml = null)
 	{

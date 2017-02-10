@@ -1,10 +1,12 @@
 <?php
 
 /**
+ * QuickBooks DiscountLine object class
+ *
+ * Derived from Keith's Invoice DiscountLine class
  * 
- * 
- * @license LICENSE.txt
- * @author Keith Palmer <keith@ConsoliBYTE.com> 
+ * @author Erich Musick <mail@erichmusick.com>
+ * @license LICENSE.txt 
  * 
  * @package QuickBooks
  * @subpackage Object
@@ -18,13 +20,13 @@ QuickBooks_Loader::load('/QuickBooks/Object.php');
 /**
  * 
  */
-QuickBooks_Loader::load('/QuickBooks/Object/SalesReceipt.php');
+QuickBooks_Loader::load('/QuickBooks/Object/CreditMemo.php');
 
 /**
  * 
  * 
  */
-class QuickBooks_Object_Invoice_SalesTaxLine extends QuickBooks_Object
+class QuickBooks_Object_CreditMemo_DiscountLine extends QuickBooks_Object
 {
 	/**
 	 * Create a new QuickBooks SalesReceipt SalesReceiptLine object
@@ -38,13 +40,16 @@ class QuickBooks_Object_Invoice_SalesTaxLine extends QuickBooks_Object
 	
 	public function setAmount($amount)
 	{
+		$amount = (float) $amount;
+		
+		// Discount amounts are always negative in QuickBooks 
+		if ($amount > 0)
+		{
+			$amount = $amount * -1.0;
+		}
+		
 		return $this->setAmountType('Amount', $amount);
 	}
-	
-	public function setRatePercent($rate)
-	{
-		return $this->set('RatePercent', $rate);
-	}	
 	
 	public function setAccountListID($ListID)
 	{
@@ -81,12 +86,12 @@ class QuickBooks_Object_Invoice_SalesTaxLine extends QuickBooks_Object
 	{
 		switch ($parent)
 		{
-			case QUICKBOOKS_ADD_INVOICE:
-				$root = 'SalesTaxLineAdd';
+			case QUICKBOOKS_ADD_CREDITMEMO:
+				$root = 'DiscountLineAdd';
 				$parent = null;
 				break;
-			case QUICKBOOKS_MOD_INVOICE:
-				$root = 'SalesTaxLineMod';
+			case QUICKBOOKS_MOD_CREDITMEMO:
+				$root = 'DiscountLineMod';
 				$parent = null;
 				break;
 		}
@@ -118,6 +123,8 @@ class QuickBooks_Object_Invoice_SalesTaxLine extends QuickBooks_Object
 	 */
 	public function object()
 	{
-		return 'SalesTaxLine';
+		return 'DiscountLine';
 	}
 }
+
+?>

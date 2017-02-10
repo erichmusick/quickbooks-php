@@ -97,7 +97,11 @@ class QuickBooks_Object_ReceivePayment extends QuickBooks_Object
 	
 	public function getCustomerApplicationID()
 	{
-		return $this->get('CustomerRef ' . QUICKBOOKS_API_APPLICATIONID);
+		//$applicationId = $this->getApplicationIDType('CustomerRef ' . QUICKBOOKS_API_APPLICATIONID, QUICKBOOKS_OBJECT_CUSTOMER, 'CustomerRef ListID');
+		//print "application id = ".  $applicationId . "<br />";
+		
+		return $this->extractApplicationID($this->get('CustomerRef ' . QUICKBOOKS_API_APPLICATIONID));
+		//return $applicationId;
 	}
 	
 	/**
@@ -216,6 +220,16 @@ class QuickBooks_Object_ReceivePayment extends QuickBooks_Object
 		return $this->set('AppliedToTxn', $lines);*/
 		
 		return $this->addListItem('AppliedToTxn', $obj);
+	}
+	
+	public function getAppliedToTxnLine($i)
+	{
+		return $this->getListItem('AppliedToTxn', $i);
+	}
+	
+	public function listAppliedToTxnLines()
+	{
+		return $this->getList('AppliedToTxn');
 	}
 	
 	/**
@@ -473,7 +487,7 @@ class QuickBooks_Object_ReceivePayment extends QuickBooks_Object
 	}
 	
 	public function asXML($root = null, $parent = null, $object = null)
-	{
+	{	
 		if (is_null($object))
 		{
 			$object = $this->_object;
@@ -500,8 +514,17 @@ class QuickBooks_Object_ReceivePayment extends QuickBooks_Object
 				
 				break;
 			case QUICKBOOKS_MOD_RECEIVEPAYMENT:
-				
+
 				// finish me!
+				$object = $this->_object;
+				
+				if ($this->exists('AppliedToTxnMod'))
+				{
+					foreach ($object['AppliedToTxnMod'] as $key => $obj)
+					{
+						$obj->setOverride('AppliedToTxnMod');
+					}
+				}
 				
 				break;
 		}
@@ -526,6 +549,12 @@ class QuickBooks_Object_ReceivePayment extends QuickBooks_Object
 		return parent::asQBXML($request, $todo_for_empty_elements, $indent, $root);
 	}
 	*/
+	public function asQBXML($request, $version = null, $locale = null, $root = null)
+	{
+		$this->_cleanup();
+		
+		return parent::asQBXML($request, $version = null, $locale = null, $root);
+	}
 	
 	/**
 	 * Tell what type of object this is 

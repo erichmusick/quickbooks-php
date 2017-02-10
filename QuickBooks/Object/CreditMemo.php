@@ -1,11 +1,11 @@
 <?php
 
 /**
- * QuickBooks Invoice object container
+ * QuickBooks Credit Memo object container
  * 
  * @author Keith Palmer <keith@consolibyte.com>
  * @license LICENSE.txt 
- * 
+ * link
  * @package QuickBooks
  * @subpackage Object
  */
@@ -16,37 +16,42 @@
 QuickBooks_Loader::load('/QuickBooks/Object.php');
 
 /**
- * Used for some InvoiceLine conversions
+ * Used for some CreditMemoLine conversions
  */
 QuickBooks_Loader::load('/QuickBooks/Object/Generic.php');
 
 /**
- * Invoice lines for Invoices
+ * CreditMemo lines for CreditMemos
  */
-QuickBooks_Loader::load('/QuickBooks/Object/Invoice/InvoiceLine.php');
+QuickBooks_Loader::load('/QuickBooks/Object/CreditMemo/CreditMemoLine.php');
 
 /**
  * Sales Receipt discount line item
  */
-QuickBooks_Loader::load('/QuickBooks/Object/Invoice/DiscountLine.php');
+QuickBooks_Loader::load('/QuickBooks/Object/CreditMemo/DiscountLine.php');
+
+/**
+ * Linked transaction line item
+ */
+QuickBooks_Loader::load('/QuickBooks/Object/CreditMemo/LinkedTxn.php');
 
 /**
  * Sales Receipt shipping line item
  */
-QuickBooks_Loader::load('/QuickBooks/Object/Invoice/ShippingLine.php');
+QuickBooks_Loader::load('/QuickBooks/Object/CreditMemo/ShippingLine.php');
 
 /**
  * Sales Receipt sales tax line item
  */
-QuickBooks_Loader::load('/QuickBooks/Object/Invoice/SalesTaxLine.php');
+QuickBooks_Loader::load('/QuickBooks/Object/CreditMemo/SalesTaxLine.php');
 
 /**
- * QuickBooks Invoice class definition
+ * QuickBooks CreditMemo class definition
  */
-class QuickBooks_Object_Invoice extends QuickBooks_Object
+class QuickBooks_Object_CreditMemo extends QuickBooks_Object
 {
 	/**
-	 * Create a new QuickBooks Invoice object
+	 * Create a new QuickBooks CreditMemo object
 	 * 
 	 * @param array $arr
 	 */
@@ -56,7 +61,7 @@ class QuickBooks_Object_Invoice extends QuickBooks_Object
 	}
 	
 	/**
-	 * Alias of {@link QuickBooks_Object_Invoice::setTxnID()}
+	 * Alias of {@link QuickBooks_Object_CreditMemo::setTxnID()}
 	 */
 	public function setTransactionID($TxnID)
 	{
@@ -64,7 +69,7 @@ class QuickBooks_Object_Invoice extends QuickBooks_Object
 	}
 	
 	/**
-	 * Set the transaction ID of the Invoice object
+	 * Set the transaction ID of the CreditMemo object
 	 * 
 	 * @param string $TxnID
 	 * @return boolean
@@ -75,7 +80,7 @@ class QuickBooks_Object_Invoice extends QuickBooks_Object
 	}
 	
 	/**
-	 * Alias of {@link QuickBooks_Object_Invoice::getTxnID()}
+	 * Alias of {@link QuickBooks_Object_CreditMemo::getTxnID()}
 	 */
 	public function getTransactionID()
 	{
@@ -124,14 +129,6 @@ class QuickBooks_Object_Invoice extends QuickBooks_Object
 	{
 		return $this->set('CustomerRef FullName', $name);
 	}
-
-	/**
-	 * @deprecated
-	 */
-	public function setCustomerName($name)
-	{
-		return $this->set('CustomerRef FullName', $name);
-	}
 	
 	/**
 	 * Get the customer ListID
@@ -162,15 +159,7 @@ class QuickBooks_Object_Invoice extends QuickBooks_Object
 	{
 		return $this->get('CustomerRef FullName');
 	}
-
-	/**
-	 * @deprecated
-	 */
-	public function getCustomerName()
-	{
-		return $this->get('CustomerRef FullName');
-	}
-		
+	
 	/** 
 	 * Set the class ListID for this invoice
 	 * 
@@ -295,7 +284,7 @@ class QuickBooks_Object_Invoice extends QuickBooks_Object
 	}
 	
 	/**
-	 * Alias of {@link QuickBooks_Object_Invoice::setTxnDate()}
+	 * Alias of {@link QuickBooks_Object_CreditMemo::setTxnDate()}
 	 */
 	public function setTransactionDate($date)
 	{
@@ -315,7 +304,7 @@ class QuickBooks_Object_Invoice extends QuickBooks_Object
 	}
 	
 	/**
-	 * Alias of {@link QuickBooks_Object_Invoice::getTxnDate()}
+	 * Alias of {@link QuickBooks_Object_CreditMemo::getTxnDate()}
 	 */
 	public function getTransactionDate()
 	{
@@ -334,7 +323,7 @@ class QuickBooks_Object_Invoice extends QuickBooks_Object
 	}
 	
 	/**
-	 * Alias of {@link QuickBooks_Object_Invoice::setRefNumber()}
+	 * Alias of {@link QuickBooks_Object_CreditMemo::setRefNumber()}
 	 */
 	public function setReferenceNumber($str)
 	{
@@ -352,7 +341,7 @@ class QuickBooks_Object_Invoice extends QuickBooks_Object
 	}
 
 	/**
-	 * Alias of {@link QuickBooks_Object_Invoice::getRefNumber()}
+	 * Alias of {@link QuickBooks_Object_CreditMemo::getRefNumber()}
 	 */
 	public function getReferenceNumber()
 	{
@@ -641,47 +630,6 @@ class QuickBooks_Object_Invoice extends QuickBooks_Object
 		return $this->extractApplicationID($this->get('ShipMethodRef ' . QUICKBOOKS_API_APPLICATIONID));
 	}
 	
-	/**
-	 * Set the application ID for the payment method
-	 * 
-	 * @param mixed $value		The payment method primary key from your application
-	 * @return 					boolean
-	 */
-	public function setPaymentMethodApplicationID($value)
-	{
-		return $this->set('PaymentMethodRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_PAYMENTMETHOD, QUICKBOOKS_LISTID, $value));
-	}
-	
-	public function setPaymentMethodName($name)
-	{
-		return $this->set('PaymentMethodRef FullName', $name);
-	}
-	
-	public function setPaymentMethodListID($ListID)
-	{
-		return $this->set('PaymentMethodRef ListID', $ListID);
-	}
-	
-	public function getPaymentMethodName()
-	{
-		return $this->get('PaymentMethodRef FullName');
-	}
-	
-	public function getPaymentMethodListID()
-	{
-		return $this->get('PaymentMethodRef ListID');
-	}
-	
-	/**
-	 * Get the payment method application ID
-	 * 
-	 * @return value
-	 */
-	public function getPaymentMethodApplicationID()
-	{
-		return $this->extractApplicationID($this->get('PaymentMethodRef ' . QUICKBOOKS_API_APPLICATIONID));
-	}
-	
 	public function setSalesTaxItemListID($ListID)
 	{
 		return $this->set('ItemSalesTaxRef ListID', $ListID);
@@ -695,14 +643,6 @@ class QuickBooks_Object_Invoice extends QuickBooks_Object
 	public function getSalesTaxItemApplicationID()
 	{
 		return $this->get('ItemSalesTaxRef ' . QUICKBOOKS_API_APPLICATIONID);
-	}
-	
-	/**
-	 * @deprecated
-	 */
-	public function setSalesTaxItemName($name)
-	{
-		return $this->set('ItemSalesTaxRef FullName', $name);
 	}
 
 	public function setSalesTaxItemFullName($name)
@@ -750,119 +690,72 @@ class QuickBooks_Object_Invoice extends QuickBooks_Object
 		return $this->getBooleanType('IsToBeEmailed');
 	}
 	
-	public function setCustomerSalesTaxCodeListID($ListID)
+	public function setCustomerSalesTaxCodeListID()
 	{
-		return $this->set('CustomerSalesTaxCodeRef ListID', $ListID);
+		
 	}
 	
-	public function setCustomerSalesTaxCodeFullName($name)
+	public function setCustomerSalesTaxCodeName()
 	{
-		return $this->set('CustomerSalesTaxCodeRef FullName', $name);
+		
 	}
 	
 	public function getCustomerSalesTaxCodeListID()
 	{
-		return $this->get('CustomerSalesTaxCodeRef ListID');
+		
 	}
 	
 	public function getCustomerSalesTaxCodeName()
 	{
-		return $this->get('CustomerSalesTaxCodeRef FullName');
-	}
-	
-	public function setLinkToTxnID($TxnID)
-	{
-		return $this->set('LinkToTxnID', $TxnID);
-	}
-
-	public function getLinkToTxnID()
-	{
-		return $this->get('LinkToTxnID');
-	}
-	
-	/*
-	public function getInvoiceLines()
-	{
-		return $this->getList('InvoiceLine');
-	}
-	
-	public function getInvoiceLine($which)
-	{
-		$list = $this->getInvoiceLines();
-		
-		if (isset($list[$which]))
-		{
-			return $list[$which];
-		}
-		
-		return null;
-	}
-	*/
-	
-	/*
-	public function setInvoiceLine($i, 
-	{
 		
 	}
-	*/
+	
+	/**
+	 * Alias of {@link QuickBooks_Object_CreditMemo::addLinkedTxn()}
+	 */
+	public function addLinkedTransaction($obj)
+	{
+		return $this->addLinkedTxn($obj);
+	}
 	
 	/**
 	 * 
 	 * 
-	 * @param 
 	 */
-	public function addInvoiceLine($obj)
+	public function addLinkedTxn($obj)
 	{
-		return $this->addListItem('InvoiceLine', $obj);
+		return $this->addListItem('LinkedTxn', $obj);
+	}
 		
-		/*
-		$lines = $this->get('InvoiceLine');
-		
-		//
-		$lines[] = $obj;
-		
-		return $this->set('InvoiceLine', $lines);
-		*/
+	public function getLinkedTxnLine($i)
+	{
+		return $this->getListItem('LinkedTxn', $i);
 	}
 	
-	/*
-	public function setInvoiceLineData($i, $key, $value)
+	public function listLinkedTxnLines()
 	{
-		$lines = $this->getInvoiceLines();
-		if (isset($lines[$i]))
-		{
-			
-		}
-		
-		return $this->set('InvoiceLine', $lines);
-	}
-	*/
-	
-	public function getInvoiceLine($i)
-	{
-		return $this->getListItem('InvoiceLine', $i);
+		return $this->getList('LinkedTxn');
 	}
 	
-	public function listInvoiceLines()
+	public function addCreditMemoLine($obj)
 	{
-		return $this->getList('InvoiceLine');
+		return $this->addListItem('CreditMemoLine', $obj);
 	}
 	
-	/**
-	 * Add a discount line (only supported by Online Edition as of 8.0)
-	 * 
-	 * @param QuickBooks_Object_Invoice_DiscountLine
-	 * @return boolean
-	 */
-	public function addDiscountLine($obj)
+	public function getCreditMemoLine($i)
 	{
-		return $this->addListItem('DiscountLine', $obj);
+		return $this->getListItem('CreditMemoLine', $i);
+	}
+	
+	public function listCreditMemoLines()
+	{
+		return $this->getList('CreditMemoLine');
 	}
 
 	/**
 	 * Add a sales tax line (only supported by Online Edition as of 8.0)
 	 * 
-	 * @param QuickBooks_Object_Invoice_SalesTaxLine
+	 * @param QuickBooks_Object_CreditMemo_SalesTaxLine
 	 * @return boolean
 	 */
 	public function addSalesTaxLine($obj)
@@ -873,7 +766,7 @@ class QuickBooks_Object_Invoice extends QuickBooks_Object
 	/**
 	 * Add a shipping line (only supported by Online Edition as of 8.0)
 	 * 
-	 * @param QuickBooks_Object_Invoice_ShippingLine
+	 * @param QuickBooks_Object_CreditMemo_ShippingLine
 	 * @return boolean
 	 */
 	public function addShippingLine($obj)
@@ -894,14 +787,14 @@ class QuickBooks_Object_Invoice extends QuickBooks_Object
 		return $this->get('Other');
 	}
 	
-	public function getBalanceRemaining()
+	public function getCreditRemaining()
 	{
-		return $this->getAmountType('BalanceRemaining');
+		return $this->getAmountType('CreditRemaining');
 	}
 	
-	public function setBalanceRemaining($amount)
+	public function setCreditRemaining($amount)
 	{
-		return $this->setAmountType('BalanceRemaining', $amount);
+		return $this->setAmountType('CreditRemaining', $amount);
 	}	
 	
 	/**
@@ -919,11 +812,11 @@ class QuickBooks_Object_Invoice extends QuickBooks_Object
 	{
 		switch ($request)
 		{
-			case 'InvoiceAddRq':
+			case 'CreditMemoAddRq':
 				
-				if (isset($this->_object['InvoiceLine']))
+				if (isset($this->_object['CreditMemoLine']))
 				{
-					$this->_object['InvoiceLineAdd'] = $this->_object['InvoiceLine'];
+					$this->_object['CreditMemoLineAdd'] = $this->_object['CreditMemoLine'];
 				}
 
 				if (isset($this->_object['ShippingLine']))
@@ -942,11 +835,11 @@ class QuickBooks_Object_Invoice extends QuickBooks_Object
 				}				
 				
 				break;
-			case 'InvoiceModRq':
+			case 'CreditMemoModRq':
 				
-				if (isset($this->_object['InvoiceLine']))
+				if (isset($this->_object['CreditMemoLine']))
 				{
-					$this->_object['InvoiceLineMod'] = $this->_object['InvoiceLine'];	
+					$this->_object['CreditMemoLineMod'] = $this->_object['CreditMemoLine'];	
 				}
 				
 				break;
@@ -967,16 +860,16 @@ class QuickBooks_Object_Invoice extends QuickBooks_Object
 		
 		switch ($root)
 		{
-			case QUICKBOOKS_ADD_INVOICE:
+			case QUICKBOOKS_ADD_CREDITMEMO:
 				
-				//if (isset($this->_object['InvoiceLine']))
+				//if (isset($this->_object['CreditMemoLine']))
 				//{
-				//	$this->_object['InvoiceLineAdd'] = $this->_object['InvoiceLine'];
+				//	$this->_object['CreditMemoLineAdd'] = $this->_object['CreditMemoLine'];
 				//}
 				
-				foreach ($object['InvoiceLineAdd'] as $key => $obj)
+				foreach ($object['CreditMemoLineAdd'] as $key => $obj)
 				{
-					$obj->setOverride('InvoiceLineAdd');
+					$obj->setOverride('CreditMemoLineAdd');
 				}
 
 				if (!empty($object['ShippingLineAdd']))
@@ -994,7 +887,7 @@ class QuickBooks_Object_Invoice extends QuickBooks_Object
 						$obj->setOverride('DiscountLineAdd');
 					}
 				}
-				
+
 				if (!empty($object['SalesTaxLineAdd']))
 				{
 					foreach ($object['SalesTaxLineAdd'] as $key => $obj)
@@ -1004,10 +897,10 @@ class QuickBooks_Object_Invoice extends QuickBooks_Object
 				}
 				
 				break;
-			case QUICKBOOKS_MOD_INVOICE:
-				if (isset($object['InvoiceLine']))
+			case QUICKBOOKS_MOD_CREDITMEMO:
+				if (isset($object['CreditMemoLine']))
 				{
-					$object['InvoiceLineMod'] = $object['InvoiceLine'];
+					$object['CreditMemoLineMod'] = $object['CreditMemoLine'];
 				}
 				break;
 		}
@@ -1049,6 +942,6 @@ class QuickBooks_Object_Invoice extends QuickBooks_Object
 	 */
 	public function object()
 	{
-		return QUICKBOOKS_OBJECT_INVOICE;
+		return QUICKBOOKS_OBJECT_CREDITMEMO;
 	}
 }

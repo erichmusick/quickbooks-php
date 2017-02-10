@@ -1,10 +1,12 @@
 <?php
 
 /**
+ * QuickBooks CreditMemo SalesTaxLine object class
+ *
+ * Derived from Keith's Invoice SalesTaxLine class
  * 
- * 
- * @license LICENSE.txt
- * @author Keith Palmer <keith@ConsoliBYTE.com> 
+ * @author Erich Musick <mail@erichmusick.com>
+ * @license LICENSE.txt 
  * 
  * @package QuickBooks
  * @subpackage Object
@@ -18,13 +20,13 @@ QuickBooks_Loader::load('/QuickBooks/Object.php');
 /**
  * 
  */
-QuickBooks_Loader::load('/QuickBooks/Object/SalesReceipt.php');
+QuickBooks_Loader::load('/QuickBooks/Object/CreditMemo.php');
 
 /**
  * 
  * 
  */
-class QuickBooks_Object_Invoice_SalesTaxLine extends QuickBooks_Object
+class QuickBooks_Object_CreditMemo_SalesTaxLine extends QuickBooks_Object
 {
 	/**
 	 * Create a new QuickBooks SalesReceipt SalesReceiptLine object
@@ -44,7 +46,7 @@ class QuickBooks_Object_Invoice_SalesTaxLine extends QuickBooks_Object
 	public function setRatePercent($rate)
 	{
 		return $this->set('RatePercent', $rate);
-	}	
+	}
 	
 	public function setAccountListID($ListID)
 	{
@@ -81,11 +83,11 @@ class QuickBooks_Object_Invoice_SalesTaxLine extends QuickBooks_Object
 	{
 		switch ($parent)
 		{
-			case QUICKBOOKS_ADD_INVOICE:
+			case QUICKBOOKS_ADD_CREDITMEMO:
 				$root = 'SalesTaxLineAdd';
 				$parent = null;
 				break;
-			case QUICKBOOKS_MOD_INVOICE:
+			case QUICKBOOKS_MOD_CREDITMEMO:
 				$root = 'SalesTaxLineMod';
 				$parent = null;
 				break;
@@ -121,3 +123,5 @@ class QuickBooks_Object_Invoice_SalesTaxLine extends QuickBooks_Object
 		return 'SalesTaxLine';
 	}
 }
+
+?>

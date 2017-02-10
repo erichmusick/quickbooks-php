@@ -18,7 +18,7 @@ abstract class QuickBooks_Request
 	/**
 	 * Placeholder constructor method
 	 */
-	abstract public function __construct($var);
+	//abstract public function __construct($var);
 	
 	/**
 	 * 

@@ -1568,6 +1568,12 @@ class QuickBooks_API
 		return $this->_doAdd(__METHOD__, QUICKBOOKS_ADD_SERVICEITEM, QUICKBOOKS_OBJECT_SERVICEITEM, $obj, $callback, $webapp_ID, $priority, $err);
 	}
 	
+	public function modifyServiceItem($obj, $callback = null, $webapp_ID = null, $priority = null)
+	{
+		$err = '';
+		return $this->_doMod(__METHOD__, QUICKBOOKS_MOD_SERVICEITEM, QUICKBOOKS_OBJECT_SERVICEITEM, $obj, $callback, $webapp_ID, $priority, $err);
+	}
+	
 	public function addInventoryAdjustment($obj, $callback = null, $webapp_ID = null, $priority = null, $dependency = null)
 	{
 		if (is_null($priority) and !is_null($dependency))
@@ -2070,6 +2076,79 @@ class QuickBooks_API
 	}
 	
 	/**
+	 * Add a credit memo to QuickBooks
+	 * 
+	 * @author Erich Musick
+	 * @param QuickBooks_Object_CreditMemo	The credit memo to add to QuickBooks
+	 * @param callback $callback			A callback function to call when a value is retrieved from QuickBooks
+	 * @param integer $webapp_ID			A unique ID that your application uses to identify this object (i.e.: primary key value)
+	 * @param integer $priority
+	 * @return boolean
+	 */
+	public function addCreditMemo(QuickBooks_Object_CreditMemo $obj, $callback = null, $webapp_ID = null, $priority = null)
+	{
+		$err = '';
+		return $this->_doAdd(__METHOD__, QUICKBOOKS_ADD_CREDITMEMO, QUICKBOOKS_OBJECT_CREDITMEMO, $obj, $callback, $webapp_ID, $priority, $err);
+	}
+
+	// EDM
+	public function searchCreditMemos($arr = array(), $callback = null, $priority = null, $recur = null)
+	{
+		$obj = new QuickBooks_Object_CreditMemo($arr);
+		
+		$err = '';
+		return $this->_doQuery(__METHOD__, QUICKBOOKS_QUERY_CREDITMEMO, QUICKBOOKS_OBJECT_CREDITMEMO, $obj, $callback, null, $priority, $err, $recur);
+	}
+	
+	/**
+	 * Retrieve the list of credit memos modified between the specified date range.
+	 * Start or end date may be omitted to retrieve all credit memos modified after
+	 * or before a certain date.
+	 * @author Erich Musick
+	 * @return boolean
+	 **/
+	public function listCreditMemosModifiedBetween($start_datetime, $end_datetime, $callback = null, $priority = null, $return = array(), $recur = null)
+	{
+		$obj = new QuickBooks_Object_CreditMemo();
+
+		if (!is_null($start_datetime))
+		{
+			$obj->set('ModifiedDateRangeFilter FromModifiedDate', QuickBooks_Utilities::datetime($start_datetime));
+		}
+		
+		if (!is_null($end_datetime))
+		{
+			$obj->set('ModifiedDateRangeFilter ToModifiedDate', QuickBooks_Utilities::datetime($end_datetime));
+		}
+		
+		$obj->set('IncludeLineItems', 'true');
+		$obj->set('IncludeLinkedTxns', 'true');
+		
+		$err = '';
+		return $this->_doQuery(__METHOD__, QUICKBOOKS_QUERY_CREDITMEMO, QUICKBOOKS_OBJECT_RECEIVEPAYMENT, $obj, $callback, null, $priority, $err, $recur);
+	}
+
+	/**
+	 * Retrieve the list of credit memos modified after the specified date time
+	 * @author Erich Musick
+	 * @return boolean
+	 */
+	public function listCreditMemosModifiedAfter( $datetime, $callback = null, $priority = null, $return = array(), $recur = null )
+	{
+		return $this->listCreditMemosModifiedBetween( $datetime, null, $callback, $priority, $return, $recur );
+	}
+	
+	/**
+	 * Retrieve the list of credit memos modified before the specified date time
+	 * @author Erich Musick
+	 * @return boolean
+	 */
+	public function listCreditMemosModifiedBefore( $datetime, $callback = null, $priority = null, $return = array(), $recur = null )
+	{
+		return $this->listCreditMemosModifiedBetween( null, $datetime, $callback, $priority, $return, $recur );
+	}
+	
+	/**
 	 * Add a sales receipt to QuickBooks
 	 * 
 	 * @param QuickBooks_Object_SalesReceipt
@@ -2377,6 +2456,17 @@ class QuickBooks_API
 		return $this->_doAdd(__METHOD__, QUICKBOOKS_ADD_CHECK, QUICKBOOKS_OBJECT_CHECK, $obj, $callback, $webapp_ID, $priority, $err);
 	}
 	
+	// EDM
+	public function searchChecks($arr = array(), $callback = null, $priority = null, $recur = null)
+	{
+		$obj = new QuickBooks_Object_Check($arr);
+		
+		$err = '';
+		return $this->_doQuery(__METHOD__, QUICKBOOKS_QUERY_CHECK, QUICKBOOKS_OBJECT_CHECK, $obj, $callback, null, $priority, $err, $recur);
+	}
+	
+	
+
 	/**
 	 * 
 	 * 
@@ -2389,7 +2479,35 @@ class QuickBooks_API
 		}
 		
 		$err = '';
-		return $this->_doMod(__METHOD__, QUICKBOOKS_MOD_CHECK, QUICKBOOKS_OBJECT_CHECK, $obj, $callback, null, $priority, $err);
+		return $this->_doMod(__METHOD__, QUICKBOOKS_MOD_CHECK, QUICKBOOKS_OBJECT_CHECK, $obj, $callback, $webapp_ID, $priority, $err);
+	}
+	
+	/**
+	 * Retrieve the list of checks modified between the specified date range.
+	 * Start or end date may be omitted to retrieve all credit memos modified after
+	 * or before a certain date.
+	 * @author Erich Musick
+	 * @return boolean
+	 **/
+	public function listChecksModifiedBetween($start_datetime, $end_datetime, $callback = null, $priority = null, $return = array(), $recur = null)
+	{
+		$obj = new QuickBooks_Object_Check();
+
+		if (!is_null($start_datetime))
+		{
+			$obj->set('ModifiedDateRangeFilter FromModifiedDate', QuickBooks_Utilities::datetime($start_datetime));
+		}
+		
+		if (!is_null($end_datetime))
+		{
+			$obj->set('ModifiedDateRangeFilter ToModifiedDate', QuickBooks_Utilities::datetime($end_datetime));
+		}
+		
+		$obj->set('IncludeLineItems', 'true');
+		$obj->set('IncludeLinkedTxns', 'true');
+		
+		$err = '';
+		return $this->_doQuery(__METHOD__, QUICKBOOKS_QUERY_CHECK, QUICKBOOKS_OBJECT_CHECK, $obj, $callback, null, $priority, $err, $recur);
 	}
 
 	public function addDeposit($obj, $callback = null, $webapp_ID = null, $priority = null)
@@ -2422,7 +2540,8 @@ class QuickBooks_API
 	
 	public function modifyReceivePayment($obj, $callback = null, $webapp_ID = null, $priority = null)
 	{
-		
+		$err = '';
+		return $this->_doMod(__METHOD__, QUICKBOOKS_MOD_RECEIVEPAYMENT, QUICKBOOKS_OBJECT_RECEIVEPAYMENT, $obj, $callback, $webapp_ID, $priority, $err);
 	}
 	
 	public function getReceivePayment($TxnID, $callback = null, $webapp_ID = null, $priority = null, $recur = null)
@@ -2443,15 +2562,35 @@ class QuickBooks_API
 	
 	public function searchReceivePayments($arr = array(), $callback = null, $priority = null, $recur = null)
 	{
-		$obj = new QuickBooks_Object_ReceivePayment();
-		
+		$obj = new QuickBooks_Object_ReceivePayment($arr);
+
 		$err = '';
-		return $this->_doQuery(__METHOD__, QUICKBOOKS_QUERY_RECEIVEPAYMENT, QUICKBOOKS_OBJECT_RECEIVEPAYMENT, $obj, $callback, $priority, $err, $recur);
+		return $this->_doQuery(__METHOD__, QUICKBOOKS_QUERY_RECEIVEPAYMENT, QUICKBOOKS_OBJECT_RECEIVEPAYMENT, $obj, $callback, null, $priority, $err, $recur);
 	}
 	
 	public function listReceivePaymentsForCustomer()
 	{
 		
+	}
+	
+	public function listReceivePaymentsModifiedBetween($start_datetime, $end_datetime, $callback = null, $priority = null, $return = array(), $recur = null)
+	{
+		$obj = new QuickBooks_Object_ReceivePayment();
+
+		if (!is_null($start_datetime))
+		{
+			$obj->set('ModifiedDateRangeFilter FromModifiedDate', QuickBooks_Utilities::datetime($start_datetime));
+		}
+		
+		if (!is_null($end_datetime))
+		{
+			$obj->set('ModifiedDateRangeFilter ToModifiedDate', QuickBooks_Utilities::datetime($end_datetime));
+		}
+		
+		$obj->set('IncludeLineItems', 'true');
+		
+		$err = '';
+		return $this->_doQuery(__METHOD__, QUICKBOOKS_QUERY_RECEIVEPAYMENT, QUICKBOOKS_OBJECT_RECEIVEPAYMENT, $obj, $callback, null, $priority, $err, $recur);
 	}
 	
 	public function addSalesOrder($obj, $callback = null, $webapp_ID = null, $priority = null)
