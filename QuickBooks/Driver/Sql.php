@@ -1831,8 +1831,7 @@ abstract class QuickBooks_Driver_Sql extends QuickBooks_Driver
 	 * @param mixed $extra				Any extra data you stored with the mapping will be placed here
 	 * @return string					The QuickBooks ListID or TxnID
 	 */
-	/*
-	protected function _identToQuickBooks($user, $objecttype, $uniqueid, &$editsequence, &$extra)
+	public function identToQuickBooks($user, $objecttype, $uniqueid, &$editsequence, &$extra)
 	{
 		$errnum = 0;
 		$errmsg = '';
@@ -1864,7 +1863,6 @@ abstract class QuickBooks_Driver_Sql extends QuickBooks_Driver
 
 		return null;
 	}
-	*/
 
 	/**
 	 * Resolve a mapping of a QuickBooks ListID or TxnID to a unique application ID
@@ -3830,4 +3828,3 @@ abstract class QuickBooks_Driver_Sql extends QuickBooks_Driver
 		return false;
 	}
 }
-
